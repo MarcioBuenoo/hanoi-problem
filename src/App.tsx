@@ -15,7 +15,6 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState(800); // velocidade em ms
   const intervalRef = useRef<number | null>(null);
 
-  // 🧩 Algoritmo recursivo de Torres de Hanoi
   const hanoi = (n: number, from: number, aux: number, to: number, result: Move[]) => {
     if (n === 1) {
       result.push({ from, to });
@@ -26,7 +25,6 @@ const App: React.FC = () => {
     hanoi(n - 1, aux, from, to, result);
   };
 
-  // 🔁 Reinicia tudo e gera os movimentos
   const startSimulation = () => {
     const result: Move[] = [];
     hanoi(numDisks, 0, 1, 2, result);
@@ -40,12 +38,10 @@ const App: React.FC = () => {
     setIsRunning(true);
   };
 
-  // ⏸️ Pausa ou continua a animação
   const togglePause = () => {
     setIsRunning((prev) => !prev);
   };
 
-  // ⏭️ Executa um passo manualmente
   const nextStep = () => {
     if (step < moves.length) {
       executeMove(moves[step]);
@@ -53,7 +49,6 @@ const App: React.FC = () => {
     }
   };
 
-  // 🧱 Executa um movimento
   const executeMove = (move: Move) => {
     setTowers((prev) => {
       const newTowers = prev.map((t) => [...t]);
@@ -63,7 +58,6 @@ const App: React.FC = () => {
     });
   };
 
-  // ⏰ Controla a execução automática
   useEffect(() => {
     if (!isRunning || step >= moves.length) return;
 
@@ -78,84 +72,86 @@ const App: React.FC = () => {
   }, [isRunning, step, moves, speed]);
 
   return (
-    <div>
-      <h1>🏗️ Torres de Hanoi</h1>
+    <>
+    <div className="app-container">
+        <h1>🏗️ Torres de Hanoi</h1>
 
-      <div style={{ marginBottom: "20px" }}>
-        <label>Discos: </label>
-        <input
-          type="number"
-          value={numDisks}
-          onChange={(e) => setNumDisks(Number(e.target.value))}
-          min={1}
-          max={7}
-        />
-
-        <button onClick={startSimulation}>🔁 Reiniciar</button>
-        <button onClick={togglePause}>
-          {isRunning ? "⏸️ Pausar" : "▶️ Retomar"}
-        </button>
-        <button onClick={nextStep}>⏭️ Avançar</button>
-
-        <div style={{ marginTop: "10px" }}>
-          <label>Velocidade: </label>
+        <div style={{ marginBottom: "20px" }} className="controls">
+          <label>Discos: </label>
           <input
-            type="range"
-            min="200"
-            max="1500"
-            value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-          />{" "}
-          {speed} ms
+            type="number"
+            value={numDisks}
+            onChange={(e) => setNumDisks(Number(e.target.value))}
+            min={1}
+            max={7} 
+            onKeyDown={(e) => e.preventDefault()}
+            />
+
+          <button onClick={startSimulation}>🔁 Iniciar</button>
+          <button onClick={togglePause}>
+            {isRunning ? "⏸️ Pausar" : "▶️ Retomar"}
+          </button>
+          <button onClick={nextStep}>⏭️ Avançar</button>
+
+          <div style={{ marginTop: "10px" }}>
+            <label>Velocidade: </label>
+            <input
+              type="range"
+              min="200"
+              max="1500"
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))} />{" "}
+            {speed} ms
+          </div>
+        </div>
+
+        <div className="towers">
+          {towers.map((tower, index) => (
+            <div key={index} className="tower">
+              {tower.map((disk) => (
+                <div
+                  key={disk}
+                  className="disk"
+                  style={{ width: `${40 + disk * 15}px` }}
+                >
+                  {disk}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <p>
+          Passo {step}/{moves.length}
+        </p>
+
+        <h3>🪜 Sequência de movimentos:</h3>
+        <div
+          style={{
+            maxHeight: "200px",
+            overflowY: "auto",
+            margin: "0 auto",
+            width: "60%",
+            textAlign: "left",
+            backgroundColor: "#201f1fff",
+            borderRadius: "10px",
+            padding: "10px",
+          }}
+        >
+          {moves.map((m, i) => (
+            <div
+              key={i}
+              style={{
+                color: i < step ? "green" : "gray",
+                fontWeight: i < step ? "bold" : "normal",
+              }}
+            >
+              {i + 1}. Mover disco de <b>{m.from + 1}</b> → <b>{m.to + 1}</b>
+            </div>
+          ))}
         </div>
       </div>
-
-      <div className="towers">
-        {towers.map((tower, index) => (
-          <div key={index} className="tower">
-            {tower.map((disk) => (
-              <div
-                key={disk}
-                className="disk"
-                style={{ width: `${40 + disk * 15}px` }}
-              >
-                {disk}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      <p>
-        Passo {step}/{moves.length}
-      </p>
-
-      <h3>🪜 Sequência de movimentos:</h3>
-      <div
-        style={{
-          maxHeight: "200px",
-          overflowY: "auto",
-          margin: "0 auto",
-          width: "60%",
-          textAlign: "left",
-          backgroundColor: "#fff",
-          borderRadius: "10px",
-          padding: "10px",
-        }}
-      >
-        {moves.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              color: i < step ? "green" : "gray",
-              fontWeight: i < step ? "bold" : "normal",
-            }}
-          >
-            {i + 1}. Mover disco de <b>{m.from + 1}</b> → <b>{m.to + 1}</b>
-          </div>
-        ))}
-      </div>
-    </div>
+      </>
   );
 };
 
