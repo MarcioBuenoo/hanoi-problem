@@ -15,6 +15,10 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState(800); // velocidade em ms
   const intervalRef = useRef<number | null>(null);
 
+
+  
+// Função recursiva
+
   const hanoi = (n: number, from: number, aux: number, to: number, result: Move[]) => {
     if (n === 1) {
       result.push({ from, to });
@@ -24,6 +28,8 @@ const App: React.FC = () => {
     result.push({ from, to });
     hanoi(n - 1, aux, from, to, result);
   };
+
+//
 
   const startSimulation = () => {
     const result: Move[] = [];
